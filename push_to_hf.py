@@ -253,6 +253,43 @@ D, I = index.search(q, k=10)
 
 Base model: BAAI/bge-m3 — [Multi-Linguality, Multi-Functionality, Multi-Granularity](https://arxiv.org/abs/2402.03216)
 
+## ONNX (Python 외 언어용)
+
+`onnx/` 폴더에 사전 변환된 ONNX 모델이 포함되어 있습니다. Node.js, Java, Go, Rust 등 onnxruntime이 있는 어디서든 사용 가능합니다. 결과는 model2vec 와 완전 일치 (cos=1.0, max|diff|=0 검증).
+
+```python
+from huggingface_hub import snapshot_download
+snapshot_download(
+    "hysnnnn/kor-minish-bge-m3-ko",
+    allow_patterns=["onnx/*", "tokenizer.json"],
+    local_dir="kor-minish-onnx",
+)
+```
+
+```python
+import numpy as np, onnxruntime as ort
+from tokenizers import Tokenizer
+
+tok = Tokenizer.from_file("kor-minish-onnx/tokenizer.json")
+sess = ort.InferenceSession("kor-minish-onnx/onnx/model.onnx")
+
+def encode(texts):
+    encs = tok.encode_batch(texts, add_special_tokens=False)
+    max_len = max(len(e.ids) for e in encs) or 1
+    ids = np.zeros((len(encs), max_len), dtype=np.int64)
+    mask = np.zeros((len(encs), max_len), dtype=np.float32)
+    for i, e in enumerate(encs):
+        ids[i, :len(e.ids)] = e.ids
+        mask[i, :len(e.ids)] = 1.0
+    return sess.run(None, {"input_ids": ids, "attention_mask": mask})[0]
+
+vecs = encode(["안녕하세요", "반갑습니다"])
+```
+
+ONNX 입출력:
+- `input_ids` (B, S) int64, `attention_mask` (B, S) float32
+- `embedding` (B, 256) float32, L2 정규화됨
+
 ## License
 
 MIT — 상업적 이용 포함 자유. 원 저작권 고지만 유지하세요.
@@ -263,6 +300,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", default=DEFAULT_REPO)
     parser.add_argument("--model-dir", default=DEFAULT_DIR)
+    parser.add_argument("--onnx-dir", default=None,
+                        help="ONNX 디렉토리도 함께 onnx/ 하위에 업로드")
+    parser.add_argument("--skip-main", action="store_true",
+                        help="메인 모델 업로드 건너뛰기 (model card는 갱신)")
     parser.add_argument("--private", action="store_true")
     args = parser.parse_args()
 
