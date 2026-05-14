@@ -149,11 +149,18 @@ def main() -> None:
     add_common(p_sum)
     p_sum.set_defaults(func=cmd_summary)
 
+    from kor_minish.train import add_subparser as add_train_subparser
+    add_train_subparser(sub)
+
     args = parser.parse_args()
-    if args.format is None:
-        args.format = args.global_format
-    model = StaticModel.from_pretrained(args.model)
-    args.func(model, args)
+    if not hasattr(args, "format") or args.format is None:
+        args.format = getattr(args, "global_format", "text")
+
+    if getattr(args, "_needs_model", True):
+        model = StaticModel.from_pretrained(args.model)
+        args.func(model, args)
+    else:
+        args.func(args)
 
 
 if __name__ == "__main__":

@@ -29,7 +29,41 @@ kor-minish summary article.txt --top 3
 echo "텍스트..." | kor-minish summary --top 3
 ```
 
-### 3) ONNX (Python/Node.js/Java/Go/Rust 등)
+### 3) 너 데이터로 도메인 특화 학습 (FAQ / CS 챗봇)
+
+세 가지 입력 형식 자동 감지:
+
+**Paraphrase 그룹** (추천 — CS 챗봇 최적, `intents.jsonl`):
+```jsonl
+{"intent": "refund",   "examples": ["환불", "돈 돌려주세요", "결제 취소"]}
+{"intent": "shipping", "examples": ["배송 얼마나", "언제 도착", "택배 추적"]}
+```
+
+**Q&A 쌍** (`faqs.csv`): `question,answer` — 같은 답변을 공유하는 질문들이 자동으로 paraphrase 그룹으로 묶임.
+
+**STS 점수** (`pairs.csv`): `sentence1,sentence2,score` — 0~1 직접 라벨.
+
+실행:
+```bash
+kor-minish train \
+  --data faqs.jsonl \
+  --output my-cs-model \
+  --base BAAI/bge-m3 \
+  --epochs 1 \
+  --eval-split 0.1 \
+  --push-to-hub myuser/my-cs-model   # 옵션: HF Hub 자동 업로드
+```
+
+내부 흐름:
+1. 데이터 파싱 + 형식 감지
+2. train/eval split
+3. base ST fine-tune (CosineSimilarityLoss)
+4. model2vec 재-distill
+5. held-out 평가 (accuracy + pearson)
+
+→ 결과로 `kor-minish encode/similarity`에 바로 쓸 수 있는 도메인 특화 모델이 나옴.
+
+### 4) ONNX (Python/Node.js/Java/Go/Rust 등)
 
 ```bash
 # 변환

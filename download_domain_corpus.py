@@ -3,16 +3,22 @@
 이 데이터는 STS 쌍이 아니라 raw 텍스트. vocab 강화용으로 사용:
     data/raw_corpus/<repo>/  ← 다운로드 받은 텍스트
     data/vocab_domain.txt    ← 명사 추출 후 빈도 top 30K
-
-ko-roberta tokenizer 또는 kiwipiepy로 명사 추출.
 """
 from __future__ import annotations
 
+import os
 from collections import Counter
 from pathlib import Path
 
-from datasets import load_dataset
-from kiwipiepy import Kiwi
+# HF cache를 외장하드로 (Mac 내부 디스크 절약)
+HF_CACHE = Path("/Volumes/SAMSUNG/hf_cache")
+HF_CACHE.mkdir(parents=True, exist_ok=True)
+os.environ["HF_HOME"] = str(HF_CACHE)
+os.environ["HF_DATASETS_CACHE"] = str(HF_CACHE / "datasets")
+os.environ["HUGGINGFACE_HUB_CACHE"] = str(HF_CACHE / "hub")
+
+from datasets import load_dataset  # noqa: E402
+from kiwipiepy import Kiwi  # noqa: E402
 
 OUT = Path("data/raw_corpus")
 VOCAB_OUT = Path("data/vocab_domain.txt")
