@@ -6,15 +6,39 @@
 
 ## 빠르게 써보기
 
+### 1) Python 한 줄
+
 ```bash
 pip install model2vec
 ```
 
 ```python
 from model2vec import StaticModel
+m = StaticModel.from_pretrained("hysnnnn/kor-minish-bge-m3-ko")
+m.encode(["안녕하세요", "반갑습니다"])  # (2, 256)
+```
 
-model = StaticModel.from_pretrained("hysnnnn/kor-minish-bge-m3-ko")
-vectors = model.encode(["안녕하세요", "반갑습니다"])  # (2, 256)
+### 2) CLI 한 줄 (Ollama 스타일)
+
+```bash
+pip install git+https://github.com/johunsang/kor-minish.git
+
+kor-minish encode "안녕하세요"
+kor-minish similarity "한국 음식" "김치찌개" "주식" "된장국"
+kor-minish summary article.txt --top 3
+echo "텍스트..." | kor-minish summary --top 3
+```
+
+### 3) ONNX (Python/Node.js/Java/Go/Rust 등)
+
+```bash
+# 변환
+python export_onnx.py
+# → kor-minish-bge-m3-ko-onnx/{model.onnx, model.onnx.data, tokenizer.json}
+
+# 사용 (model2vec 없이)
+pip install onnxruntime tokenizers
+python examples/onnx_demo.py
 ```
 
 ## 파이프라인 개요

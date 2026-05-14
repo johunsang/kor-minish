@@ -4,8 +4,11 @@ __pycache__/
 .python-version
 uv.lock
 kor-minish-*/
+kor-minish-*-onnx/
 vocab_ko.txt
 build_vocab.log
 .DS_Store
 *.zip
+*.onnx
+*.onnx.data
 

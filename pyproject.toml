@@ -15,5 +15,19 @@ dependencies = [
     "pydantic>=2.7",
 ]
 
-[tool.uv]
-package = false
+[project.scripts]
+kor-minish = "kor_minish.cli:main"
+
+[project.optional-dependencies]
+onnx = [
+    "onnx>=1.16",
+    "onnxruntime>=1.18",
+    "tokenizers>=0.19",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["kor_minish"]
