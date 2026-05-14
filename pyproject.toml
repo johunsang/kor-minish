@@ -1,29 +1,72 @@
 [project]
 name = "kor-minish"
-version = "0.1.0"
-description = "Korean static embeddings distilled from BAAI/bge-m3 with model2vec"
+version = "0.1.1"
+description = "Korean static sentence embeddings distilled from BAAI/bge-m3 via model2vec — fast, CPU-friendly, with CLI for encode/similarity/summary and custom domain training"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "johunsang", email = "johunsang@users.noreply.github.com" }]
 requires-python = ">=3.10,<3.13"
+keywords = ["korean", "embeddings", "static-embeddings", "model2vec", "sentence-similarity", "nlp", "bge-m3"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Korean",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+]
 dependencies = [
+    "model2vec>=0.6.0",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+train = [
     "model2vec[distill]>=0.6.0",
     "sentence-transformers>=3.0",
-    "numpy>=1.26",
+    "accelerate>=1.1",
+    "datasets>=2.19",
+    "kiwipiepy>=0.17",
+    "tqdm>=4.66",
+]
+server = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+]
+onnx = [
+    "onnx>=1.16",
+    "onnxruntime>=1.18",
+    "tokenizers>=0.19",
+]
+all = [
+    "model2vec[distill]>=0.6.0",
+    "sentence-transformers>=3.0",
+    "accelerate>=1.1",
     "datasets>=2.19",
     "kiwipiepy>=0.17",
     "tqdm>=4.66",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
     "pydantic>=2.7",
-]
-
-[project.scripts]
-kor-minish = "kor_minish.cli:main"
-
-[project.optional-dependencies]
-onnx = [
     "onnx>=1.16",
     "onnxruntime>=1.18",
     "tokenizers>=0.19",
 ]
+
+[project.urls]
+Homepage = "https://github.com/johunsang/kor-minish"
+Repository = "https://github.com/johunsang/kor-minish"
+"Model on Hugging Face" = "https://huggingface.co/hysnnnn/kor-minish-bge-m3-ko"
+Issues = "https://github.com/johunsang/kor-minish/issues"
+
+[project.scripts]
+kor-minish = "kor_minish.cli:main"
 
 [build-system]
 requires = ["hatchling"]

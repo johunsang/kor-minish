@@ -149,8 +149,13 @@ def main() -> None:
     add_common(p_sum)
     p_sum.set_defaults(func=cmd_summary)
 
-    from kor_minish.train import add_subparser as add_train_subparser
-    add_train_subparser(sub)
+    # train 서브커맨드는 sentence-transformers 등 무거운 의존성 필요
+    # [train] extras 설치된 경우에만 등록
+    try:
+        from kor_minish.train import add_subparser as add_train_subparser
+        add_train_subparser(sub)
+    except ImportError:
+        pass
 
     args = parser.parse_args()
     if not hasattr(args, "format") or args.format is None:

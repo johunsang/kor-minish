@@ -19,9 +19,16 @@ import csv
 import json
 from itertools import combinations
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, TYPE_CHECKING
 
-from sentence_transformers import InputExample
+if TYPE_CHECKING:
+    from sentence_transformers import InputExample
+
+
+def _input_example(texts, label):
+    """sentence-transformers의 InputExample을 lazy import."""
+    from sentence_transformers import InputExample
+    return InputExample(texts=texts, label=label)
 
 
 def _read_jsonl(path: Path) -> Iterator[dict]:
@@ -75,7 +82,7 @@ def load_paraphrase(path: Path) -> list[InputExample]:
         ex_list = obj.get("examples", [])
         # 같은 그룹 내 모든 쌍 → positive
         for a, b in combinations(ex_list, 2):
-            examples.append(InputExample(texts=[a, b], label=1.0))
+            examples.append(_input_example(texts=[a, b], label=1.0))
     return examples
 
 
@@ -93,11 +100,11 @@ def load_qa(path: Path) -> list[InputExample]:
     examples: list[InputExample] = []
     for questions in by_answer.values():
         for a, b in combinations(questions, 2):
-            examples.append(InputExample(texts=[a, b], label=1.0))
+            examples.append(_input_example(texts=[a, b], label=1.0))
         # 질문과 답변도 약한 양성으로 (선택)
         if questions:
             for q in questions:
-                examples.append(InputExample(texts=[q, by_answer_key(by_answer, q)], label=0.7))
+                examples.append(_input_example(texts=[q, by_answer_key(by_answer, q)], label=0.7))
     return examples
 
 
@@ -116,7 +123,7 @@ def load_sts(path: Path) -> list[InputExample]:
         for row in rows:
             score = float(row.get("score", row.get("label", 0.5)))
             score = max(0.0, min(1.0, score))
-            examples.append(InputExample(
+            examples.append(_input_example(
                 texts=[row["sentence1"].strip(), row["sentence2"].strip()],
                 label=score,
             ))
@@ -124,7 +131,7 @@ def load_sts(path: Path) -> list[InputExample]:
         for obj in _read_jsonl(path):
             score = float(obj.get("score", obj.get("label", 0.5)))
             score = max(0.0, min(1.0, score))
-            examples.append(InputExample(
+            examples.append(_input_example(
                 texts=[obj["sentence1"], obj["sentence2"]], label=score,
             ))
     return examples
