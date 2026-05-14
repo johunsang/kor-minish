@@ -1,0 +1,19 @@
+[project]
+name = "kor-minish"
+version = "0.1.0"
+description = "Korean static embeddings distilled from BAAI/bge-m3 with model2vec"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "model2vec[distill]>=0.6.0",
+    "sentence-transformers>=3.0",
+    "numpy>=1.26",
+    "datasets>=2.19",
+    "kiwipiepy>=0.17",
+    "tqdm>=4.66",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+]
+
+[tool.uv]
+package = false

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.python-version
+uv.lock
+kor-minish-*/
+vocab_ko.txt
+build_vocab.log
+.DS_Store
+*.zip
+
