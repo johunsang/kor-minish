@@ -12,4 +12,5 @@ build_vocab.log
 *.onnx
 *.onnx.data
 
-data/
+data/*
+!data/v3/
